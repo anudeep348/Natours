@@ -551,6 +551,17 @@ body {
   width: 100%;
 }
 
+#map:focus-visible {
+  outline: none;
+}
+
+/* map popup text styles */
+.mapPopup {
+  text-align: center;
+  font-family: 'Lato', sans-serif;
+  font-size: 1.4rem;
+}
+
 .marker {
   background-image: url('../img/pin.png');
   background-size: cover;
@@ -830,6 +841,7 @@ body {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+  justify-content: flex-end;
 }
 .footer__nav li {
   margin-left: 1.5rem;
@@ -1076,6 +1088,26 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-gap: 7rem;
 }
+@media (max-width: 1200px) {
+  html {
+    font-size: 56.25%;
+  }
+  body {
+    padding: 0;
+  }
+  .card-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 320px) {
+  html {
+    font-size: 45%;
+  }
+  .card-container {
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
 
 .card {
   border-radius: 3px;
@@ -1321,4 +1353,18 @@ body {
   box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
   -webkit-transform: translateY(-2px);
   transform: translateY(-2px);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
 }

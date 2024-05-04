@@ -68,6 +68,17 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+  });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check if it's there
   let token;
@@ -77,6 +88,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -89,24 +102,55 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
   // 3) check if user still exist
-  const freshUser = await User.findById(decoded.id);
+  const currentUser = await User.findById(decoded.id);
 
-  if (!freshUser) {
+  if (!currentUser) {
     return next(new AppError(`The user no longer exist.`));
   }
 
   // 4) check if user chainged password after token was issued
 
-  if (freshUser.changedPasswordAfter(decoded.iat)) {
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError(`user recently chainged password! please login again`, 401),
     );
   }
 
   // Grant acces to protected route
-  req.user = freshUser;
+  req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
+
+// Only for rendered pages. No errors
+exports.isLoggedIn = async (req, res, next) => {
+  // 1) Getting token and check if it's there
+  const token = req.cookies.jwt;
+  try {
+    if (token) {
+      // 1) Verifying token
+      const decoded = await promisify(jwt.verify)(
+        token,
+        process.env.JWT_SECRET,
+      );
+
+      // 2) check if user still exist
+      const currentUser = await User.findById(decoded.id);
+
+      // 3) check if user chainged password after token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // There is a logged in user
+      res.locals.user = currentUser;
+      return next();
+    }
+  } catch (err) {
+    return next();
+  }
+  next();
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {

@@ -6,7 +6,7 @@ const factory = require('./handlerFactory');
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
   Object.keys(obj).forEach((el) => {
-    if (allowedFields.includers(el)) {
+    if (allowedFields.includes(el)) {
       newObj[el] = obj[el];
     }
   });
@@ -42,7 +42,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 
   res.status(200).json({
-    status: 'sucess',
+    status: 'success',
     data: {
       user: Updateduser,
     },
