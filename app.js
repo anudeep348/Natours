@@ -83,9 +83,10 @@ app.use(
   helmet.contentSecurityPolicy({
     directives: {
       ...helmet.contentSecurityPolicy.getDefaultDirectives(),
-      'script-src': ["'self'", 'https://unpkg.com'],
+      'script-src': ["'self'", 'https://unpkg.com', 'https://js.stripe.com'],
 
       'img-src': ["'self'", 'data:', 'https://*.tile.openstreetmap.org'],
+      frameSrc: ["'self'", 'https://js.stripe.com'],
     },
   }),
 );
