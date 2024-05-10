@@ -54,6 +54,7 @@ exports.getMyTours = catchAsync(async (req, res, next) => {
 
   res.status(200).render('overview', {
     title: 'My tours',
+    numTours: tours.length,
     tours,
   });
 });
